@@ -72,8 +72,8 @@ login:
 	docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
 
 push-image:
-	docker push $(IMAGE):$(VERSION)
-	docker rmi $(IMAGE):$(VERSION)
+	docker push $(IMAGE)
+	docker rmi $(IMAGE)
 
 logout:
 	docker logout
