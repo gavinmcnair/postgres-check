@@ -14,11 +14,11 @@ GIT_REPO          		:= github.com/$(VENDOR)/$(PROJNAME)
 GIT_SHA           		:= $(shell git rev-parse --verify HEAD)
 BUILD_DATE        		:= $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 
-DOCKER_USERNAME     	:= "gavinmcnair"
+DOCKER_USERNAME     	:= gavinmcnair
 DOCKER_PASSWORD     	?="unknown"
 
 # Construct docker image name.
-IMAGE             		:= $(PROJNAME):$(VERSION)
+IMAGE             		:= docker.io/${DOCKER_USERNAME}/$(PROJNAME):$(VERSION)
 
 #------------------------------------------------------------------
 # Go configuration
