@@ -7,6 +7,9 @@ PROJNAME          		:= postgrescheck
 VENDOR            		:= gavinmcnair
 MAINTAINER        		:= Gavin McNair
 
+CIRCLE_BUILD_NUM      ?= "unknown"
+VERSION               := 1.1.$(CIRCLE_BUILD_NUM)
+
 GIT_REPO          		:= github.com/$(VENDOR)/$(PROJNAME)
 GIT_SHA           		:= $(shell git rev-parse --verify HEAD)
 BUILD_DATE        		:= $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
@@ -67,3 +70,10 @@ build:
 .PHONY: login
 login:
 	docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+
+push-image:
+	docker push $(IMAGE):$(VERSION)
+	docker rmi $(IMAGE):$(VERSION)
+
+logout:
+	docker logout

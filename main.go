@@ -28,7 +28,7 @@ func main() {
 }
 
 func run() error {
-	var cfg config
+	cfg := config{}
 
 	if err := env.Parse(&cfg); err != nil {
 		return err
