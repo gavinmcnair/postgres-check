@@ -6,7 +6,7 @@ COPY . .
 
 RUN make postgrescheck
 
-FROM scratch
+FROM gcr.io/distroless/static-debian11
 MAINTAINER Gavin McNair
 
 ARG git_repository="Unknown"
