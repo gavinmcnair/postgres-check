@@ -36,14 +36,7 @@ func run() error {
 		return err
 	}
 
-	log.Info().
-		Str("Database Host", cfg.Host).
-		Int("Database Port", cfg.Port).
-		Str("Database User", cfg.User).
-		Str("Database Password", "Hidden").
-		Str("Database Name", cfg.Database).
-		Str("Encryption", cfg.Ssl).
-		Msg("Starting Postgres Check")
+
 
 	user, err := returnFileContentsOrPassword(cfg.User)
 	if err != nil {
@@ -57,6 +50,16 @@ func run() error {
 	if err != nil {
 		return err
 	}
+
+	log.Info().
+		Str("Database Host", host).
+		Int("Database Port", cfg.Port).
+		Str("Database User", user).
+		Str("Database Password", pass).
+		Str("Database Name", cfg.Database).
+		Str("Encryption", cfg.Ssl).
+		Msg("Starting Postgres Check")
+
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s", host, cfg.Port, user, pass)
 
