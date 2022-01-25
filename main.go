@@ -7,6 +7,8 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"io/ioutil"
+	"os"
 	"time"
 )
 
@@ -43,7 +45,20 @@ func run() error {
 		Str("Encryption", cfg.Ssl).
 		Msg("Starting Postgres Check")
 
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s", cfg.Host, cfg.Port, cfg.User, cfg.Pass)
+	user, err := returnFileContentsOrPassword(cfg.User)
+	if err != nil {
+		return err
+	}
+	pass, err := returnFileContentsOrPassword(cfg.Pass)
+	if err != nil {
+		return err
+	}
+	host, err := returnFileContentsOrPassword(cfg.Host)
+	if err != nil {
+		return err
+	}
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s", host, cfg.Port, user, pass)
 
 	if cfg.Database != "" {
 		psqlInfo = psqlInfo + " dbname=" + cfg.Database
@@ -65,4 +80,24 @@ func run() error {
 	}
 
 	return nil
+}
+
+func returnFileContentsOrPassword(potentialPassword string) (string, error) {
+	if _, err := os.Stat(potentialPassword); err == nil {
+		passwordFromFile, err := readFileAndReturnContents(potentialPassword)
+		if err != nil {
+			return "", err
+		}
+		return passwordFromFile, nil
+	}
+
+	return potentialPassword, nil
+}
+
+func readFileAndReturnContents(filename string) (string, error) {
+	filebytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", err
+	}
+	return string(filebytes), nil
 }
