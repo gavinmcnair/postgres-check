@@ -13,20 +13,21 @@ import (
 )
 
 type config struct {
-	Database string `env:"DATABASE"`
-	Host     string `env:"DB_HOST,required"`
-	Port     int    `env:"DB_PORT" envDefault:"5432"`
-	User     string `env:"DB_USER,required"`
-	Pass     string `env:"DB_PASS,required"`
-	Ssl      string `env:"SSLMODE" envDefault:"disable"`
+	Database       string        `env:"DATABASE"`
+	Host           string        `env:"DB_HOST,required"`
+	Port           int           `env:"DB_PORT" envDefault:"5432"`
+	User           string        `env:"DB_USER,required"`
+	Pass           string        `env:"DB_PASS,required"`
+	RepeatInterval time.Duration `env:"REPEAT_INTERVAL" envDefault:"0s"`
+	Ssl            string        `env:"SSLMODE" envDefault:"verify-ca"`
 }
 
 func main() {
 	zerolog.DurationFieldUnit = time.Second
 	if err := run(); err != nil {
-		log.Fatal().Err(err).Msg("failed to run")
+		log.Fatal().Err(err).Msg("Failed to run")
 	}
-	log.Info().Msg("Database connection successful - gracefully exiting")
+	log.Info().Msg("Gracefully exiting")
 }
 
 func run() error {
@@ -35,8 +36,6 @@ func run() error {
 	if err := env.Parse(&cfg); err != nil {
 		return err
 	}
-
-
 
 	user, err := returnFileContentsOrPassword(cfg.User)
 	if err != nil {
@@ -60,7 +59,6 @@ func run() error {
 		Str("Encryption", cfg.Ssl).
 		Msg("Starting Postgres Check")
 
-
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s", host, cfg.Port, user, pass)
 
 	if cfg.Database != "" {
@@ -71,6 +69,23 @@ func run() error {
 		psqlInfo = psqlInfo + " sslmode=" + cfg.Ssl
 	}
 
+	for {
+
+		err := connectToDatabase(psqlInfo)
+		if err != nil {
+			return err
+		}
+		if cfg.RepeatInterval == time.Duration(0) {
+			return nil
+		}
+
+		time.Sleep(cfg.RepeatInterval)
+	}
+
+	return nil
+}
+
+func connectToDatabase(psqlInfo string) error {
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		return err
@@ -81,7 +96,8 @@ func run() error {
 	if err != nil {
 		return err
 	}
-
+	log.Info().
+		Msg("Database ping success")
 	return nil
 }
 
