@@ -85,6 +85,8 @@ func run() error {
 	return nil
 }
 
+/* Need to check connection behaviour. We might be making lots of connections here.
+   Probably need to seperate connection from ping and pass the db object */
 func connectToDatabase(psqlInfo string) error {
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
