@@ -76,7 +76,7 @@ func run() error {
 			return err
 		}
 		if cfg.RepeatInterval == time.Duration(0) {
-			return nil
+			break
 		}
 
 		time.Sleep(cfg.RepeatInterval)
