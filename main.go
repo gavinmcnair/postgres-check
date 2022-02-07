@@ -65,7 +65,7 @@ func run() error {
 		Str("Encryption", cfg.Ssl).
 		Msg("Starting Postgres Check")
 
-	createPrometheusEndpoint(cfg).ListenAndServe()
+	go createPrometheusEndpoint(cfg).ListenAndServe()
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s", host, cfg.Port, user, pass)
 
