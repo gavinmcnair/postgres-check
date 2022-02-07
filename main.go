@@ -3,19 +3,24 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/caarlos0/env/v6"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"io/ioutil"
-	"os"
-	"time"
 )
 
 type config struct {
 	Database       string        `env:"DATABASE"`
 	Host           string        `env:"DB_HOST,required"`
 	Port           int           `env:"DB_PORT" envDefault:"5432"`
+	ListenPort     int           `env:"LISTEN_PORT" envDefault:"8080"`
 	User           string        `env:"DB_USER,required"`
 	Pass           string        `env:"DB_PASS,required"`
 	RepeatInterval time.Duration `env:"REPEAT_INTERVAL" envDefault:"0s"`
@@ -53,11 +58,14 @@ func run() error {
 	log.Info().
 		Str("Database Host", host).
 		Int("Database Port", cfg.Port).
+		Int("Listen Port", cfg.ListenPort).
 		Str("Database User", user).
 		Str("Database Password", pass).
 		Str("Database Name", cfg.Database).
 		Str("Encryption", cfg.Ssl).
 		Msg("Starting Postgres Check")
+
+	createPrometheusEndpoint(cfg).ListenAndServe()
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s", host, cfg.Port, user, pass)
 
@@ -121,4 +129,22 @@ func readFileAndReturnContents(filename string) (string, error) {
 		return "", err
 	}
 	return string(filebytes), nil
+}
+
+func createPrometheusEndpoint(cfg config) *http.Server {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		promhttp.Handler().ServeHTTP(w, r)
+	})
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "OK\n")
+	})
+
+	return &http.Server{
+		Handler:      mux,
+		Addr:         ":" + strconv.Itoa(cfg.ListenPort),
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
 }
