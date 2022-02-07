@@ -8,7 +8,7 @@ The check can also be configured with a `go` style duration (1s, 2m, 4h, etc) wh
 
 The pre-built version of the container can be found at
 
-`docker.io/gavinmcnair/postgrescheck:1.1.15`
+`docker.io/gavinmcnair/postgrescheck:1.1.25`
 
 | Environment Variable  | Default | Required | Description |
 |---|---|---|---|
