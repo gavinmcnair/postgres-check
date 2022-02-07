@@ -17,5 +17,6 @@ The pre-built version of the container can be found at
 | DB_PORT  | 5432  |  - |  Port number of listening database |
 | DB_USER  |  - |  Yes |  Username for target database or file location containing username |
 | DB_PASS  |  - |  Yes |  Password for target database or file location containing password |
+| LISTEN_PORT | 8080 | - | Listen Port for /health and /metrics endpoint |
 | REPEAT_INTERVAL  |  0 | -  | Repeat check on go duration interval (1s,5m,10h,1d,etc)  |
 | SSLMODE | verify-ca | -| Valid Options are [ 'disable']  |
