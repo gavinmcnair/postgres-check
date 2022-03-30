@@ -135,6 +135,10 @@ func createPrometheusEndpoint(cfg config) *http.Server {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		log.Info().
+			Int("Metrics Port", cfg.ListenPort).
+			Str("Path", "/metrics").
+			Msg("Metrics Collection has occured")
 		promhttp.Handler().ServeHTTP(w, r)
 	})
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
