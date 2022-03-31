@@ -3,7 +3,7 @@ CURRENT_WORKING_DIR=$(shell pwd)
 #------------------------------------------------------------------
 # Project build information
 #------------------------------------------------------------------
-PROJNAME          		:= postgrescheck
+PROJNAME          		:= prometheuscheck
 VENDOR            		:= gavinmcnair
 MAINTAINER        		:= Gavin McNair
 
@@ -45,13 +45,13 @@ vet: ## Run go vet against code
 test: fmt vet ## Run tests
 	$(GOCMD) test . -coverprofile cover.out
 
-.PHONY: postgrescheck
-postgrescheck: fmt vet
+.PHONY: prometheuscheck
+prometheuscheck: fmt vet
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOCMD) build -o $(BIN)/linux/$(PROJNAME) $(GIT_REPO)
 	env GOOS=darwin GOARCH=amd64 $(GOCMD) build -o $(BIN)/darwin/$(PROJNAME) $(GIT_REPO)
 
-.PHONY: postgrescheck-linux
-postgrescheck-linux: fmt vet
+.PHONY: prometheuscheck-linux
+prometheuscheck-linux: fmt vet
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOCMD) build -o $(BIN)/linux/$(PROJNAME) $(GIT_REPO)
 
 #------------------------------------------------------------------

@@ -1,12 +1,12 @@
 FROM golang:1.17.6 as builder
 
-WORKDIR /go/src/github.com/gavinmcnair/postgrescheck
+WORKDIR /go/src/github.com/gavinmcnair/prometheuscheck
 
 COPY . .
 
-RUN make postgrescheck
+RUN make prometheuscheck
 
-FROM gcr.io/distroless/static-debian11
+FROM scratch
 MAINTAINER Gavin McNair
 
 ARG git_repository="Unknown"
@@ -19,6 +19,6 @@ LABEL git.commit=$git_commit
 LABEL git.branch=$git_branch
 LABEL build.on=$built_on
 
-COPY --from=builder /go/src/github.com/gavinmcnair/postgrescheck/bin/linux/postgrescheck .
+COPY --from=builder /go/src/github.com/gavinmcnair/prometheuscheck/bin/linux/prometheuscheck .
 
-CMD [ "/postgrescheck" ]
+CMD [ "/prometheuscheck" ]
